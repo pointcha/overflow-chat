@@ -194,7 +194,6 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
     </div>
@@ -208,29 +207,49 @@
   var authModal = $('#auth-modal').modal( {show: false });
 
 // Create a callback which logs the current auth state
-function authDataCallback(authData) {
-  if (authData) {
-    console.log("User " + authData.uid + " is logged in with " + authData.provider);
-    var userId = authData.id;
-    name = authData[authData.provider].displayName;
 
-    if (name = "Steven Rolls") {
-      bnb = "A Charming Victorian"; // To be replaced one I get the database fields in place
-    }
+var authData = myDataRef.getAuth();
+var userId = "";
+if (authData){
+  userId = authData.uid;
+     name = authData[authData.provider].displayName;
+     console.log('user is already logged in');
+  showName();
+}
 
-    //$('#display-name').append (name);
-    $("#display-name").html("<div>" + bnb + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
+function showName() {
+  $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
 
     $("#user-settings").html("<a id='log-out' class='log-out' title='Post Chat' href='javascript:logout();'> \
      <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i></a>");
-
-  } else {
-    console.log("User is logged out");
-  }
 }
-// Register the callback to be fired every time auth state changes
 
-myDataRef.onAuth(authDataCallback);
+function login(provider) {
+  myDataRef.authWithOAuthPopup(provider, function(error, authData) {
+    if (error) {
+      console.log("login Failed!", error);
+    } else {
+      console.log("Authenticated successfully with payload:", authData);
+      userId = authData.uid;
+      name = authData[authData.provider].displayName;
+      console.log(name);
+      showName();
+authModal.modal('hide');
+     //$("#modal-title").html("Hello " + name);
+
+     // console.log("User " + authData.uid + " is logged in with " + authData.provider);
+
+     myDataRef.child('user').child(userId).once("value", function(snapshot){
+  var ifExists = snapshot.exists(); //a firebase function
+  if (ifExists){
+    console.log('user is already in the system');
+  } else {
+    myDataRef.child('user').child(userId).push({id:userId, name:name});
+  }
+})
+  }
+});
+}
 
 $('#messageInput').keypress(function (e) {
   if (e.keyCode == 13) {
@@ -239,20 +258,6 @@ $('#messageInput').keypress(function (e) {
 });
 
 
-
-function login(provider) {
-  myDataRef.authWithOAuthPopup(provider, function(error, authData) {
-    if (error) {
-      console.log("login Failed!", error);
-    } else {
-      console.log("Authenticated successfully with payload:", authData);
-
-      $("#modal-title").html("Hello " + name);
-
-    }
-  });
-}
-
 function postChat() {
   //check to see if the user is logged in
   if (!name) {
@@ -260,7 +265,7 @@ function postChat() {
   } else {
     var text = $('#messageInput').val();
     if (text != "") {
-      myDataRef.push({name: bnb, text: text});
+      myDataRef.push({name: name, text: text});
       $('#messageInput').val('');
       $('.chat-button').removeClass('select');
     } else {
@@ -274,7 +279,7 @@ function postChat() {
 function presetChatDisplay() {
   $( ".preset-chat" ).toggleClass( "hidden" );
   $( ".chevron-button" ).toggleClass( "select" );
-      changePresetMenu();
+  changePresetMenu();
 }
 
 function toggleStatus() {
