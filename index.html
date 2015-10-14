@@ -1,0 +1,395 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Overflow - Opening Doors by Connecting Bed & Breakfasts</title>
+  <meta name="Opening Doors by Connecting Bed & Breakfasts - A focused social network designed to grow opportunities for bed & beakfasts by connecting them to one and other." content="The HTML5 Herald">
+
+  <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+
+  <!--links to include BOOTSTRAP to your project-->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap-modal.min.js"></script>
+
+  <!--links to include CSS to your project-->
+  <link href="//fonts.googleapis.com/css?family=Open+Sans:300normal,300italic,400normal,400italic,600normal,600italic,700normal,700italic,800normal,800italic&amp;subset=all" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+  <!--links to include EXTERNAL JS to your project-->
+  <script src="assets/js/chat.js"></script>
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+
+  <div class="overflow-container">
+    <nav class="left">
+
+      <!-- this is the sidebar -->
+      <div class="profile">
+        <div class="profile-pic"></div>
+        
+        <div id="display-name" class="title display-name">
+          <div class="fade">Logged Out</div>
+        </div>
+        <div id="user-settings" class="user-settings">
+          <a id="log-out" class="log-out" title="Log-out." href="javascript:postChat();">
+            <i id="log-out-btn" class="fa fa-sign-in fa-2x"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="side-sect favs">
+        <div class="divide-title select">favourites</div><div class="divide"></div>
+
+        <div class="bb-line">
+         <div class="icon"></div>
+         <div class="title">Colby House</div><div class="distance km">3</div>
+       </div>
+
+       <div class="bb-line">
+        <div class="icon"></div>
+        <div class="title">Paradise Found</div><div class="distance km">5</div>
+      </div>
+    </div>
+
+    <div class="side-sect near">
+      <div class="divide-title">nearby</div><div class="divide"></div>
+
+      <div class="bb-line">
+        <div class="icon"></div>
+        <div class="title">Boot's & Sassy</div><div class="distance km">5</div>
+      </div>
+
+      <div class="bb-line">
+        <div class="icon"></div>
+        <div class="title">Weary Gardener</div><div class="distance km">7.5</div>
+      </div>
+
+      <div class="side-sect resp hidden">
+        <div class="divide-title">responses</div><div class="divide"></div>
+        <div class="response">
+          <div class="icon reply"></div>
+          <div class="bb-left">
+            <div class="action truncate">Paradise Found responded</div>
+            <div class="details">original messgae sent, 3:45pm July 23, 2015</div>
+          </div>
+          <div class="bb-right">
+            <div class="time">4:00pm</div>
+            <div class="details">respons</div>
+          </div>
+        </div>
+
+        <div class="response">
+          <div class="icon send"></div>
+          <div class="bb-left">
+            <div class="action truncate">Weary Gardener sending your way</div>
+            <div class="details">original messgae sent, 3:45pm July 23, 2015</div>
+          </div>
+          <div class="bb-right">
+            <div class="time">4:00pm</div>
+            <div class="details">respons</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <!-- this is the chat entry area -->
+  <aside>
+    <div class="input-wrapper">
+      <div class="text-choose">
+        <a id="preset-button" title="Preset Messages" href="javascript:presetChatDisplay();">
+          <div class="chevron-button"></div>
+        </a>
+      </div>
+      <input id='messageInput' class="chat-entry" type='text' placeholder='Message' onkeyup="postChatImage()">
+      <a id="chat-entry" title="Post Chat" href="javascript:postChat();">
+        <div class="chat-button"></div>
+      </a>
+      <div id="preset-chat" class="preset-chat hidden">
+        <ul>
+          <li><a>Looking for a room.</a></li>
+          <li><a>I have vacancies if needed.</a></li>
+          <li><a>I need someone to watch the place.</a></li>
+          <li><a>Sending someone your way.</a></li>
+          <li><a>All booked up.</a></li>
+          <li id="list-add"><a id="add"><div class='add-preset-button fa fa-plus-circle fa-2'></div>Add your own.</a></li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <!-- this is the main chat body area -->
+  <section>
+
+    <div class="chat-wrapper other hidden">
+      <div class="profile-pic"></div>
+      <div class="chat-body">
+        <div class="title">Colby House</div>
+        <div class="message"> I need someone to watch the place.</div>
+
+        <div class="respond-wrapper">
+          <div class="icon respond">
+          </div><div class="text respond">respond</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-wrapper self hidden">
+      <div class="profile-pic"></div>
+      <div class="chat-body">
+        <div class="title">A Charming Victorian</div>
+        <div class="message"> Looking for a room for a guest.</div>
+      </div>
+      <div>
+        <div class="icon reply"></div><div class="title"></div><div class="text reply"></div>
+        <div class="action-buttons"></div>
+      </div>
+    </div>
+
+    <div id='messagesDiv'></div>
+    <div id='buffer'></div>
+    
+
+  </section>
+
+  <!-- this is the Login Modal -->
+  <div id="auth-modal" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 id="modal-title" class="modal-title">Authenticate</h4>
+        </div>
+        <div class="modal-body text-center">
+
+          <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-3">
+              <a id="twitter-signin" href="javascript:login('twitter');">
+                <i id="twitter-signin-btn" class="fa fa-twitter-square fa-5x"></i>
+                <p>Twitter</p>
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a id="twitter-signin" href="javascript:login('facebook');">
+                <i id="twitter-signin-btn" class="fa fa-facebook-square fa-5x"></i>
+                <p>Facebook</p>
+              </a>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+  var myDataRef = new Firebase('https://overflowbnb.firebaseio.com/');
+  var name = "";
+  var authModal = $('#auth-modal').modal( {show: false });
+
+// Create a callback which logs the current auth state
+function authDataCallback(authData) {
+  if (authData) {
+    console.log("User " + authData.uid + " is logged in with " + authData.provider);
+    var userId = authData.id;
+    name = authData[authData.provider].displayName;
+
+    if (name = "Steven Rolls") {
+      bnb = "A Charming Victorian"; // To be replaced one I get the database fields in place
+    }
+
+    //$('#display-name').append (name);
+    $("#display-name").html("<div>" + bnb + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
+
+    $("#user-settings").html("<a id='log-out' class='log-out' title='Post Chat' href='javascript:logout();'> \
+     <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i></a>");
+
+  } else {
+    console.log("User is logged out");
+  }
+}
+// Register the callback to be fired every time auth state changes
+
+myDataRef.onAuth(authDataCallback);
+
+$('#messageInput').keypress(function (e) {
+  if (e.keyCode == 13) {
+    postChat();
+  }
+});
+
+
+
+function login(provider) {
+  myDataRef.authWithOAuthPopup(provider, function(error, authData) {
+    if (error) {
+      console.log("login Failed!", error);
+    } else {
+      console.log("Authenticated successfully with payload:", authData);
+
+      $("#modal-title").html("Hello " + name);
+
+    }
+  });
+}
+
+function postChat() {
+  //check to see if the user is logged in
+  if (!name) {
+    authModal.modal('show');
+  } else {
+    var text = $('#messageInput').val();
+    if (text != "") {
+      myDataRef.push({name: bnb, text: text});
+      $('#messageInput').val('');
+      $('.chat-button').removeClass('select');
+    } else {
+      $('#messageInput').attr("placeholder", "Please enter a Message.");
+      setTimeout(changeBack,4000);
+    }
+  }
+}
+
+
+function presetChatDisplay() {
+  $( ".preset-chat" ).toggleClass( "hidden" );
+  $( ".chevron-button" ).toggleClass( "select" );
+      changePresetMenu();
+}
+
+function toggleStatus() {
+ $(".status").toggleClass( "no-vacancy" );
+ if ($(".status").hasClass( "no-vacancy" )) {
+  $(".status").html("No Vacancy");
+} else {
+  $(".status").html("Vacancy");
+}
+}
+
+$(document).on("click", ".remove-preset-button", function(){
+ $(this).parent('li').remove();
+});
+
+$(document).on('click', '#preset-chat a' , function(e) {
+
+  var txt = $(e.target).text();
+  var id = $(this).attr('id'); 
+  if (id == "add") {
+
+//change the line to an input field
+$("#add").html("<div class='add-preset-button fa fa-plus-circle fa-2' onclick='addPreset()'></div><input id='add-preset' type='text' placeholder=''>");
+$("#add").removeAttr('id');
+$(this).attr('id', 'new-preset')
+
+} else if (id == "new-preset") {
+
+} else {
+  var txt = $(e.target).text();
+  $('#messageInput').val(txt);
+  presetChatDisplay();
+  postChatImage()
+  postChat();
+}
+});
+
+
+function listPreset (txtpreset) {
+ var txt = txtpreset
+ $("#list-add").before("<li><a>" + txtpreset + "</a><div class='remove-preset-button fa fa-minus-circle fa-2'></div></li>");
+}
+
+
+function addPreset() {
+  var npreset = $('#add-preset').val();
+  if (npreset != "") {
+      // add it to presets
+      listPreset (npreset);
+      changePresetMenu();
+
+    } else {
+
+      $('#add-preset').attr("placeholder", "Type message and hit ENTER");
+      setTimeout(changePresetBack,4000);
+    }
+  }
+
+  function changePresetMenu() {
+    $("#list-add").html("<a id='add'><div class='add-preset-button fa fa-plus-circle fa-2'></div>Add your own.</a>");
+  }
+
+
+  function minusPreset() {
+    $(this).parents('.li').remove();
+  }
+
+
+  function changeBack() {
+    $('#messageInput').attr("placeholder", "Message");
+  }
+
+
+  function changePresetBack() {
+    $('#add-preset').attr("placeholder", "");
+  }
+
+
+  function postChatImage(){
+    if ($('.chat-entry').filter(function(){return $(this).val() != '';}).length) {
+     $('.chat-button').addClass('select');
+   } else {
+    $('.chat-button').removeClass('select');
+  }
+}
+
+
+function logout() {
+  console.log("logging out")
+  myDataRef.unauth();
+  location.reload();
+  // $("#messagesDiv").html("");
+}
+
+myDataRef.on('child_added', function(snapshot) {
+  var message = snapshot.val();
+  displayChatMessage(message.name, message.text);
+  window.scrollTo(0,document.body.scrollHeight);
+});
+
+function displayChatMessage(name, text) {
+  $('#messagesDiv').append ( 
+    "<div class='chat-wrapper self'> \
+    <div class='profile-pic'></div> \
+    <div class='chat-body'> \
+    <div class='title'>" + name + "</div> \
+    <div class='message'>" + text + "</div>" 
+
+    // <div class='respond-wrapper'> \
+    // <div class='icon respond'></div> \
+    // <div class='text respond'>respond</div></div></div></div>"
+    );
+
+};
+</script>
+
+</body>
+</html>
