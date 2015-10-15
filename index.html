@@ -408,7 +408,7 @@ myDataRef.on('child_added', function(snapshot) {
   var message = snapshot.val();
  // userId = authData.uid
   // console.log('user is already logged in');
-  if (message.name) {
+  if (message.name && name) {
     if (message.name == name) {
       displayChatMessageMe(message.name, message.text);
     } else {
