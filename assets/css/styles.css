@@ -2,6 +2,22 @@
 	position: relative;
 }
 
+.logo {
+    background-image: url("../img/logo.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 100%;
+    height: 300px;
+}
+
+.modal-header {
+    background-image: linear-gradient( to bottom, #FAD961, #F76B1C 400px);
+    border-radius: 6px 6px 0 0;
+    min-height: 16.43px;
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
 nav {
     background-color: #727272;
     width: 480px;
@@ -44,6 +60,13 @@ nav {
 
 .user-settings a:hover {
 	color: #F2A11F; 
+}
+
+.log-title {
+    width: 60px;
+    font-size: .8rem;
+    font-weight: 300;
+    text-decoration: none;
 }
 
 .profile .title {
