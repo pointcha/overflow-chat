@@ -2,6 +2,22 @@
 	position: relative;
 }
 
+.logo {
+    background-image: url("../img/logo.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 100%;
+    height: 300px;
+}
+
+.modal-header {
+    background-image: linear-gradient( to bottom, #FAD961, #F76B1C 400px);
+    border-radius: 6px 6px 0 0;
+    min-height: 16.43px;
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
 nav {
     background-color: #727272;
     width: 480px;
@@ -44,6 +60,13 @@ nav {
 
 .user-settings a:hover {
 	color: #F2A11F; 
+}
+
+.log-title {
+    width: 60px;
+    font-size: .8rem;
+    font-weight: 300;
+    text-decoration: none;
 }
 
 .profile .title {
@@ -338,7 +361,9 @@ section {
 }
 
 .chat-wrapper {
-	margin-top: 30px;
+    padding: 30px 0;
+    width: calc(100% - 40px);
+    border-bottom: #dfdfdf 1px dotted;
 }
 
 .chat-wrapper .title {
@@ -348,14 +373,14 @@ section {
 }
 
 .other .chat-body {
-    /* border-left: #aaa 5px solid; */
-    padding-left: 10px;
+    border-left: #50E3C2 5px solid;
+    padding-left: 5px;
     margin-left: -5px;
     width: calc(100% - 100px);
 }
 
 .self .chat-body {
-	border-left: #50E3C2 5px solid;
+	border-left: #eee 5px solid;
 	padding-left: 5px;
 	margin-left: -5px;
     width: calc(100% - 100px);

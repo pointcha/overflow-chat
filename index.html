@@ -46,6 +46,7 @@
         <div id="user-settings" class="user-settings">
           <a id="log-out" class="log-out" title="Log In" href="javascript:postChat();">
             <i id="log-out-btn" class="fa fa-sign-in fa-2x"></i>
+            <div class="log-title">Log In</div>
           </a>
         </div>
       </div>
@@ -177,6 +178,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <div class="logo"></div>
           <h4 id="modal-title" class="modal-title">Authenticate</h4>
         </div>
         <div class="modal-body text-center">
@@ -221,6 +223,8 @@ if (authData){
   name = authData[authData.provider].displayName;
   console.log('user is already logged in');
   showName();
+} else {
+ // authModal.modal('show');
 }
 
 
@@ -255,7 +259,7 @@ function showName() {
   $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
 
   $("#user-settings").html("<a id='log-out' class='log-out' title='Log Out' href='javascript:logout();'> \
-   <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i></a>");
+   <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i><div class='log-title'>Log Out</div></a>");
 }
 
 $('#messageInput').keypress(function (e) {
@@ -408,7 +412,7 @@ myDataRef.on('child_added', function(snapshot) {
   var message = snapshot.val();
  // userId = authData.uid
   // console.log('user is already logged in');
-  if (message.name) {
+  if (message.name && name) {
     if (message.name == name) {
       displayChatMessageMe(message.name, message.text);
     } else {
