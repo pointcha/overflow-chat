@@ -44,7 +44,7 @@
           <div class="fade">Logged Out</div>
         </div>
         <div id="user-settings" class="user-settings">
-          <a id="log-out" class="log-out" title="Log-out." href="javascript:postChat();">
+          <a id="log-out" class="log-out" title="Log In" href="javascript:postChat();">
             <i id="log-out-btn" class="fa fa-sign-in fa-2x"></i>
           </a>
         </div>
@@ -65,44 +65,50 @@
     </div>
 
     <div class="side-sect near">
-      <div class="divide-title">nearby</div><div class="divide"></div>
+      <div class="divide-title">users</div><div class="divide"></div>
 
-      <div class="bb-line">
+      <div id="namesDiv"></div>
+
+      <div class="bb-line hidden">
         <div class="icon"></div>
         <div class="title">Boot's & Sassy</div><div class="distance km">5</div>
       </div>
 
-      <div class="bb-line">
+      <div class="bb-line hidden">
         <div class="icon"></div>
         <div class="title">Weary Gardener</div><div class="distance km">7.5</div>
       </div>
+    </div>
 
-      <div class="side-sect resp hidden">
-        <div class="divide-title">responses</div><div class="divide"></div>
-        <div class="response">
-          <div class="icon reply"></div>
-          <div class="bb-left">
-            <div class="action truncate">Paradise Found responded</div>
-            <div class="details">original messgae sent, 3:45pm July 23, 2015</div>
-          </div>
-          <div class="bb-right">
-            <div class="time">4:00pm</div>
-            <div class="details">respons</div>
-          </div>
+    <div class="side-sect resp hidden">
+      <div class="divide-title">responses</div><div class="divide"></div>
+
+      <div class="response">
+        <div class="icon reply"></div>
+        <div class="bb-left">
+          <div class="action truncate">Paradise Found responded</div>
+          <div class="details">original messgae sent, 3:45pm July 23, 2015</div>
         </div>
-
-        <div class="response">
-          <div class="icon send"></div>
-          <div class="bb-left">
-            <div class="action truncate">Weary Gardener sending your way</div>
-            <div class="details">original messgae sent, 3:45pm July 23, 2015</div>
-          </div>
-          <div class="bb-right">
-            <div class="time">4:00pm</div>
-            <div class="details">respons</div>
-          </div>
+        <div class="bb-right">
+          <div class="time">4:00pm</div>
+          <div class="details">respons</div>
         </div>
       </div>
+
+      
+
+      <div class="response">
+        <div class="icon send"></div>
+        <div class="bb-left">
+          <div class="action truncate">Weary Gardener sending your way</div>
+          <div class="details">original messgae sent, 3:45pm July 23, 2015</div>
+        </div>
+        <div class="bb-right">
+          <div class="time">4:00pm</div>
+          <div class="details">respons</div>
+        </div>
+      </div>
+      
     </nav>
   </div>
 
@@ -212,17 +218,11 @@ var authData = myDataRef.getAuth();
 var userId = "";
 if (authData){
   userId = authData.uid;
-     name = authData[authData.provider].displayName;
-     console.log('user is already logged in');
+  name = authData[authData.provider].displayName;
+  console.log('user is already logged in');
   showName();
 }
 
-function showName() {
-  $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
-
-    $("#user-settings").html("<a id='log-out' class='log-out' title='Post Chat' href='javascript:logout();'> \
-     <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i></a>");
-}
 
 function login(provider) {
   myDataRef.authWithOAuthPopup(provider, function(error, authData) {
@@ -234,12 +234,11 @@ function login(provider) {
       name = authData[authData.provider].displayName;
       console.log(name);
       showName();
-authModal.modal('hide');
+      authModal.modal('hide');
      //$("#modal-title").html("Hello " + name);
-
-     // console.log("User " + authData.uid + " is logged in with " + authData.provider);
-
+     console.log("User " + userId + " is logged in with " + authData.provider);
      myDataRef.child('user').child(userId).once("value", function(snapshot){
+
   var ifExists = snapshot.exists(); //a firebase function
   if (ifExists){
     console.log('user is already in the system');
@@ -247,14 +246,29 @@ authModal.modal('hide');
     myDataRef.child('user').child(userId).push({id:userId, name:name});
   }
 })
-  }
-});
+   }
+ });
+}
+
+
+function showName() {
+  $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
+
+  $("#user-settings").html("<a id='log-out' class='log-out' title='Log Out' href='javascript:logout();'> \
+   <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i></a>");
 }
 
 $('#messageInput').keypress(function (e) {
   if (e.keyCode == 13) {
     postChat();
   }
+});
+
+
+$(document).on("keypress", "#add-preset", function(e){
+ if (e.keyCode == 13) {
+  addPreset();
+}
 });
 
 
@@ -312,7 +326,7 @@ $(this).attr('id', 'new-preset')
   var txt = $(e.target).text();
   $('#messageInput').val(txt);
   presetChatDisplay();
-  postChatImage()
+  postChatImage();
   postChat();
 }
 });
@@ -374,15 +388,61 @@ function logout() {
   // $("#messagesDiv").html("");
 }
 
+
+myDataRef.child('user').on('value', function(snapshot) {
+  var allNames = snapshot.val();
+  for (var u in allNames) {
+    for (var i in allNames[u]) {
+      // console.log(allNames [u] [i].name);
+      if (name) {
+        if (allNames [u] [i].name !== name) {
+          displayNamesUser(allNames [u] [i].name);
+        }
+      }
+    }
+  }
+});
+
+
 myDataRef.on('child_added', function(snapshot) {
   var message = snapshot.val();
-  displayChatMessage(message.name, message.text);
+ // userId = authData.uid
+  // console.log('user is already logged in');
+  if (message.name) {
+    if (message.name == name) {
+      displayChatMessageMe(message.name, message.text);
+    } else {
+      displayChatMessageOther(message.name, message.text);
+    }
+  }
   window.scrollTo(0,document.body.scrollHeight);
 });
 
-function displayChatMessage(name, text) {
+function displayNamesUser(userName) {
+  $('#namesDiv').append (
+    "<div class='bb-line'> \
+    <div class='icon'></div> \
+    <div class='title'>" + userName + "</div> \
+    </div>"
+    );
+};
+
+function displayChatMessageMe(name, text) {
   $('#messagesDiv').append ( 
     "<div class='chat-wrapper self'> \
+    <div class='profile-pic'></div> \
+    <div class='chat-body'> \
+    <div class='title'>" + name + "</div> \
+    <div class='message'>" + text + "</div>" 
+
+    // <div class='respond-wrapper'> \
+    // <div class='icon respond'></div> \
+    // <div class='text respond'>respond</div></div></div></div>"
+    );
+
+};function displayChatMessageOther(name, text) {
+  $('#messagesDiv').append ( 
+    "<div class='chat-wrapper other'> \
     <div class='profile-pic'></div> \
     <div class='chat-body'> \
     <div class='title'>" + name + "</div> \

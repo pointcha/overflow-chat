@@ -348,9 +348,9 @@ section {
 }
 
 .other .chat-body {
-	border-left: #aaa 5px solid;
-	padding-left: 5px;
-	margin-left: -5px;
+    /* border-left: #aaa 5px solid; */
+    padding-left: 10px;
+    margin-left: -5px;
     width: calc(100% - 100px);
 }
 
