@@ -299,7 +299,7 @@ function postChat() {
       var d = new Date();
       var dt = d.toString();
 
-      myDataRef.push({name: name, text: text, image: gravatar, date: dt});
+      myDataRef.child('message').push({name: name, text: text, image: gravatar, date: dt});
       $('#messageInput').val('');
       $('.chat-button').removeClass('select');
     } else {
@@ -448,7 +448,7 @@ myDataRef.child('user').on('value', function(snapshot) {
 });
 
 
-myDataRef.on('child_added', function(snapshot) {
+myDataRef.child('message').on('child_added', function(snapshot) {
   var message = snapshot.val();
  // userId = authData.uid
   // console.log('user is already logged in');
