@@ -213,6 +213,7 @@
   var myDataRef = new Firebase('https://overflowbnb.firebaseio.com/');
   var name = "";
   var authModal = $('#auth-modal').modal( {show: false });
+  var gravatar = "";
 
 // Create a callback which logs the current auth state
 
@@ -221,7 +222,10 @@ var userId = "";
 if (authData){
   userId = authData.uid;
   name = authData[authData.provider].displayName;
+  gravatar = authData[authData.provider].profileImageURL;
+
   console.log('user is already logged in');
+
   showName();
 } else {
  // authModal.modal('show');
@@ -236,6 +240,7 @@ function login(provider) {
       console.log("Authenticated successfully with payload:", authData);
       userId = authData.uid;
       name = authData[authData.provider].displayName;
+      gravatar = authData[authData.provider].profileImageURL;
       console.log(name);
       showName();
       authModal.modal('hide');
@@ -247,7 +252,7 @@ function login(provider) {
   if (ifExists){
     console.log('user is already in the system');
   } else {
-    myDataRef.child('user').child(userId).push({id:userId, name:name});
+    myDataRef.child('user').child(userId).push({id:userId, name:name, image:gravatar});
   }
 })
    }
@@ -256,6 +261,9 @@ function login(provider) {
 
 
 function showName() {
+
+  $('.profile-pic').css('background-image', 'url(' + gravatar + ')');
+
   $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
 
   $("#user-settings").html("<a id='log-out' class='log-out' title='Log Out' href='javascript:logout();'> \
@@ -283,7 +291,7 @@ function postChat() {
   } else {
     var text = $('#messageInput').val();
     if (text != "") {
-      myDataRef.push({name: name, text: text});
+      myDataRef.push({name: name, text: text, image: gravatar});
       $('#messageInput').val('');
       $('.chat-button').removeClass('select');
     } else {
@@ -414,9 +422,9 @@ myDataRef.on('child_added', function(snapshot) {
   // console.log('user is already logged in');
   if (message.name && name) {
     if (message.name == name) {
-      displayChatMessageMe(message.name, message.text);
+      displayChatMessageMe(message.name, message.text, message.image);
     } else {
-      displayChatMessageOther(message.name, message.text);
+      displayChatMessageOther(message.name, message.text, message.image);
     }
   }
   window.scrollTo(0,document.body.scrollHeight);
@@ -431,32 +439,32 @@ function displayNamesUser(userName) {
     );
 };
 
-function displayChatMessageMe(name, text) {
+function displayChatMessageMe(name, text, image) {
   $('#messagesDiv').append ( 
     "<div class='chat-wrapper self'> \
     <div class='profile-pic'></div> \
     <div class='chat-body'> \
     <div class='title'>" + name + "</div> \
     <div class='message'>" + text + "</div>" 
-
     // <div class='respond-wrapper'> \
     // <div class='icon respond'></div> \
     // <div class='text respond'>respond</div></div></div></div>"
     );
+  $('.self .profile-pic').css('background-image', 'url(' + image + ')');
+};
 
-};function displayChatMessageOther(name, text) {
+function displayChatMessageOther(name, text, image) {
   $('#messagesDiv').append ( 
     "<div class='chat-wrapper other'> \
     <div class='profile-pic'></div> \
     <div class='chat-body'> \
     <div class='title'>" + name + "</div> \
     <div class='message'>" + text + "</div>" 
-
     // <div class='respond-wrapper'> \
     // <div class='icon respond'></div> \
     // <div class='text respond'>respond</div></div></div></div>"
     );
-
+  $('.other .profile-pic').css('background-image', 'url(' + image + ')');
 };
 </script>
 
