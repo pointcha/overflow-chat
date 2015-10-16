@@ -54,14 +54,12 @@
       <div class="side-sect favs">
         <div class="divide-title select">favourites</div><div class="divide"></div>
 
-<div id="favsDiv"></div>
-
-        <div class="bb-line hidden">
-         <div class="icon" onclick='addFavourite()'></div>
+        <div class="bb-line">
+         <div class="icon"></div>
          <div class="title">Colby House</div><div class="distance km">3</div>
        </div>
 
-       <div class="bb-line hidden">
+       <div class="bb-line">
         <div class="icon"></div>
         <div class="title">Paradise Found</div><div class="distance km">5</div>
       </div>
@@ -434,21 +432,6 @@ function logout() {
 }
 
 
-myDataRef.child('favourites').on('value', function(snapshot) {
-  var allNames = snapshot.val();
-  for (var u in allNames) {
-      // console.log(allNames [u] [i].name);
-      if (name) {
-
-        if (allNames [u].id !== userId) {
-          displayNamesFavs(allNames [u].name);
-        }
-      
-    }
-  }
-});
-
-
 myDataRef.child('user').on('value', function(snapshot) {
   var allNames = snapshot.val();
   for (var u in allNames) {
@@ -474,21 +457,11 @@ myDataRef.child('message').on('child_added', function(snapshot) {
       localFormatDate(message.date);
       displayChatMessageMe(message.name, message.text, message.image, dt);
     } else {
-      displayChatMessageOther(message.name, message.text, message.image, dt);
+      displayChatMessageOther(message.name, message.text, message.image, message.date);
     }
   }
   window.scrollTo(0,document.body.scrollHeight);
 });
-
-
-function displayNamesFavs(favsName) {
-  $('#favsDiv').append (
-    "<div class='bb-line'> \
-    <div class='icon'></div> \
-    <div class='title'>" + favsName + "test</div> \
-    </div>"
-    );
-}
 
 
 function displayNamesUser(userName) {
@@ -501,21 +474,23 @@ function displayNamesUser(userName) {
 }
 
 
+
+
+
 function addFavourite() {
-myDataRef.child('favourites').push({id: 'uid', name: 'name'});
-//myDataRef.child('fav').push({id:'text', name:'text'});
-//userId = authData.uid;
-//  name = authData[authData.provider].displayName;
 
-//  myDataRef.child('user').child('favusers').once("value", function(snapshot){
-//  var ifExists = snapshot.exists();
+userId = authData.uid;
+  name = authData[authData.provider].displayName;
 
-//  if (ifExists){
-//    console.log('user is already in the system');
-//  } else {
-//    myDataRef.child('user').push('favusers').push({id:'text', name:'text'});
-//  }
-//})
+  myDataRef.child('user/' + userId).child('favusers').once("value", function(snapshot){
+  var ifExists = snapshot.exists();
+
+  if (ifExists){
+    console.log('user is already in the system');
+  } else {
+    myDataRef.child('user/' + userId).child('favusers').push({id:userId, name:name});
+  }
+})
 }
 
 
