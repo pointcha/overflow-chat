@@ -214,6 +214,8 @@
   var name = "";
   var authModal = $('#auth-modal').modal( {show: false });
   var gravatar = "";
+  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 // Create a callback which logs the current auth state
 
@@ -249,6 +251,8 @@ function login(provider) {
      myDataRef.child('user').child(userId).once("value", function(snapshot){
 
   var ifExists = snapshot.exists(); //a firebase function
+
+
   if (ifExists){
     console.log('user is already in the system');
   } else {
@@ -291,7 +295,11 @@ function postChat() {
   } else {
     var text = $('#messageInput').val();
     if (text != "") {
-      myDataRef.push({name: name, text: text, image: gravatar});
+
+      var d = new Date();
+      var dt = d.toString();
+
+      myDataRef.push({name: name, text: text, image: gravatar, date: dt});
       $('#messageInput').val('');
       $('.chat-button').removeClass('select');
     } else {
@@ -299,6 +307,27 @@ function postChat() {
       setTimeout(changeBack,4000);
     }
   }
+}
+
+
+function localFormatDate(d) {
+  var d = new Date(d);
+var day = days[d.getDay()];
+      var hr = d.getHours();
+      if (hr == 0) {
+        hr = 12;
+      } else if (hr > 12) {
+        hr = hr - 12;
+      }
+      var min = d.getMinutes();
+      if (min < 10) {
+        min = "0" + min;
+      }
+      var ampm = (hr < 12) ? "am" : "pm";
+      var date = d.getDate();
+      var month = months[d.getMonth()];
+      var year = d.getFullYear();
+      dt = hr + ":" + min + ampm + " | " + day + ", " + date + " " + month;
 }
 
 
@@ -424,9 +453,10 @@ myDataRef.on('child_added', function(snapshot) {
   // console.log('user is already logged in');
   if (message.name && name) {
     if (message.name == name) {
-      displayChatMessageMe(message.name, message.text, message.image);
+      localFormatDate(message.date);
+      displayChatMessageMe(message.name, message.text, message.image, dt);
     } else {
-      displayChatMessageOther(message.name, message.text, message.image);
+      displayChatMessageOther(message.name, message.text, message.image, message.date);
     }
   }
   window.scrollTo(0,document.body.scrollHeight);
@@ -441,12 +471,12 @@ function displayNamesUser(userName) {
     );
 };
 
-function displayChatMessageMe(name, text, image) {
+function displayChatMessageMe(name, text, image, date) {
   $('#messagesDiv').append ( 
     "<div class='chat-wrapper self'> \
     <div class='profile-pic'></div> \
     <div class='chat-body'> \
-    <div class='title'>" + name + "</div> \
+    <div class='title'>" + name + "</div><div class='date'>" + date + "</div> \
     <div class='message'>" + text + "</div>" 
     // <div class='respond-wrapper'> \
     // <div class='icon respond'></div> \
@@ -455,12 +485,12 @@ function displayChatMessageMe(name, text, image) {
   $('.self .profile-pic').css('background-image', 'url(' + image + ')');
 };
 
-function displayChatMessageOther(name, text, image) {
+function displayChatMessageOther(name, text, image, time) {
   $('#messagesDiv').append ( 
     "<div class='chat-wrapper other'> \
     <div class='profile-pic'></div> \
     <div class='chat-body'> \
-    <div class='title'>" + name + "</div> \
+    <div class='title'>" + name + "</div><div class='date'>" + date + "</div> \
     <div class='message'>" + text + "</div>" 
     // <div class='respond-wrapper'> \
     // <div class='icon respond'></div> \
