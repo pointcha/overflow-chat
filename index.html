@@ -265,7 +265,6 @@ function login(provider) {
 
 
 function showName() {
-
   $('.profile-pic').css('background-image', 'url(' + gravatar + ')');
 
   $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
@@ -273,6 +272,7 @@ function showName() {
   $("#user-settings").html("<a id='log-out' class='log-out' title='Log Out' href='javascript:logout();'> \
    <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i><div class='log-title'>Log Out</div></a>");
 }
+
 
 $('#messageInput').keypress(function (e) {
   if (e.keyCode == 13) {
@@ -312,22 +312,22 @@ function postChat() {
 
 function localFormatDate(d) {
   var d = new Date(d);
-var day = days[d.getDay()];
-      var hr = d.getHours();
-      if (hr == 0) {
-        hr = 12;
-      } else if (hr > 12) {
-        hr = hr - 12;
-      }
-      var min = d.getMinutes();
-      if (min < 10) {
-        min = "0" + min;
-      }
-      var ampm = (hr < 12) ? "am" : "pm";
-      var date = d.getDate();
-      var month = months[d.getMonth()];
-      var year = d.getFullYear();
-      dt = hr + ":" + min + ampm + " | " + day + ", " + date + " " + month;
+  var day = days[d.getDay()];
+  var hr = d.getHours();
+  if (hr == 0) {
+    hr = 12;
+  } else if (hr > 12) {
+    hr = hr - 12;
+  }
+  var min = d.getMinutes();
+  if (min < 10) {
+    min = "0" + min;
+  }
+  var ampm = (hr < 12) ? "am" : "pm";
+  var date = d.getDate();
+  var month = months[d.getMonth()];
+  var year = d.getFullYear();
+  dt = hr + ":" + min + ampm + " | " + day + ", " + date + " " + month;
 }
 
 
@@ -337,6 +337,7 @@ function presetChatDisplay() {
   changePresetMenu();
 }
 
+
 function toggleStatus() {
  $(".status").toggleClass( "no-vacancy" );
  if ($(".status").hasClass( "no-vacancy" )) {
@@ -345,6 +346,7 @@ function toggleStatus() {
   $(".status").html("Vacancy");
 }
 }
+
 
 $(document).on("click", ".remove-preset-button", function(){
  $(this).parent('li').remove();
@@ -439,7 +441,6 @@ myDataRef.child('user').on('value', function(snapshot) {
 
         if (allNames [u] [i].id !== userId) {
           displayNamesUser(allNames [u] [i].name);
-          console.log(test);
         }
       }
     }
@@ -462,6 +463,7 @@ myDataRef.on('child_added', function(snapshot) {
   window.scrollTo(0,document.body.scrollHeight);
 });
 
+
 function displayNamesUser(userName) {
   $('#namesDiv').append (
     "<div class='bb-line'> \
@@ -469,7 +471,28 @@ function displayNamesUser(userName) {
     <div class='title'>" + userName + "</div> \
     </div>"
     );
-};
+}
+
+
+
+
+
+function addFavourite() {
+
+userId = authData.uid;
+  name = authData[authData.provider].displayName;
+
+  myDataRef.child('user/' + userId).child('favusers').once("value", function(snapshot){
+  var ifExists = snapshot.exists();
+
+  if (ifExists){
+    console.log('user is already in the system');
+  } else {
+    myDataRef.child('user/' + userId).child('favusers').push({id:userId, name:name});
+  }
+})
+}
+
 
 function displayChatMessageMe(name, text, image, date) {
   $('#messagesDiv').append ( 
@@ -483,7 +506,8 @@ function displayChatMessageMe(name, text, image, date) {
     // <div class='text respond'>respond</div></div></div></div>"
     );
   $('.self .profile-pic').css('background-image', 'url(' + image + ')');
-};
+}
+
 
 function displayChatMessageOther(name, text, image, time) {
   $('#messagesDiv').append ( 
@@ -497,7 +521,7 @@ function displayChatMessageOther(name, text, image, time) {
     // <div class='text respond'>respond</div></div></div></div>"
     );
   $('.other .profile-pic').css('background-image', 'url(' + image + ')');
-};
+}
 </script>
 
 </body>
