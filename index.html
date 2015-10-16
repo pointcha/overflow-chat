@@ -407,8 +407,10 @@ myDataRef.child('user').on('value', function(snapshot) {
     for (var i in allNames[u]) {
       // console.log(allNames [u] [i].name);
       if (name) {
-        if (allNames [u] [i].name !== name) {
+
+        if (allNames [u] [i].id !== userId) {
           displayNamesUser(allNames [u] [i].name);
+          console.log(test);
         }
       }
     }
