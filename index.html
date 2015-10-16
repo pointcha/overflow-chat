@@ -457,7 +457,7 @@ myDataRef.child('message').on('child_added', function(snapshot) {
       localFormatDate(message.date);
       displayChatMessageMe(message.name, message.text, message.image, dt);
     } else {
-      displayChatMessageOther(message.name, message.text, message.image, message.date);
+      displayChatMessageOther(message.name, message.text, message.image, dt);
     }
   }
   window.scrollTo(0,document.body.scrollHeight);
@@ -474,23 +474,7 @@ function displayNamesUser(userName) {
 }
 
 
-
-
-
 function addFavourite() {
-
-userId = authData.uid;
-  name = authData[authData.provider].displayName;
-
-  myDataRef.child('user/' + userId).child('favusers').once("value", function(snapshot){
-  var ifExists = snapshot.exists();
-
-  if (ifExists){
-    console.log('user is already in the system');
-  } else {
-    myDataRef.child('user/' + userId).child('favusers').push({id:userId, name:name});
-  }
-})
 }
 
 
