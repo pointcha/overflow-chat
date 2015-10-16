@@ -374,6 +374,13 @@ section {
 	font-weight: 600;
 }
 
+.chat-wrapper .date {
+    display: inline-block;
+    margin-left: 20px;
+    font-size: .8rem;
+    color: #cfcfcf;
+}
+
 .other .chat-body {
     border-left: #50E3C2 5px solid;
     padding-left: 5px;
