@@ -53,23 +53,21 @@
 
       <div class="side-sect favs">
         <div class="divide-title select">favourites</div><div class="divide"></div>
-
-        <div class="bb-line">
-         <div class="icon"></div>
+<div id="selected">
+        <div class="bb-line hidden">
+         <div class="icon" onclick="moveButton(this)"></div>
          <div class="title">Colby House</div><div class="distance km">3</div>
        </div>
 
-       <div class="bb-line">
-        <div class="icon"></div>
+       <div class="bb-line hidden">
+        <div class="icon" onclick="moveButton(this)"></div>
         <div class="title">Paradise Found</div><div class="distance km">5</div>
       </div>
     </div>
-
+</div>
     <div class="side-sect near">
       <div class="divide-title">users</div><div class="divide"></div>
-
       <div id="namesDiv"></div>
-
       <div class="bb-line hidden">
         <div class="icon"></div>
         <div class="title">Boot's & Sassy</div><div class="distance km">5</div>
@@ -225,9 +223,7 @@ if (authData){
   userId = authData.uid;
   name = authData[authData.provider].displayName;
   gravatar = authData[authData.provider].profileImageURL;
-
   console.log('user is already logged in');
-
   showName();
 } else {
  // authModal.modal('show');
@@ -248,7 +244,7 @@ function login(provider) {
       authModal.modal('hide');
      //$("#modal-title").html("Hello " + name);
      console.log("User " + userId + " is logged in with " + authData.provider);
-     myDataRef.child('user').child(userId).once("value", function(snapshot){
+     myDataRef.child('user').child(userId).once("value", function(snapshot) {
 
   var ifExists = snapshot.exists(); //a firebase function
 
@@ -467,7 +463,7 @@ myDataRef.child('message').on('child_added', function(snapshot) {
 function displayNamesUser(userName) {
   $('#namesDiv').append (
     "<div class='bb-line'> \
-    <div class='icon'></div> \
+    <div class='icon'  onclick='moveUser(this)'></div> \
     <div class='title'>" + userName + "</div> \
     </div>"
     );
@@ -475,6 +471,31 @@ function displayNamesUser(userName) {
 
 
 function addFavourite() {
+myDataRef.child('favourites').child(userId).once("value", function(snapshot) {
+  var ifExists = snapshot.exists(); //a firebase function
+
+  if (ifExists){
+// just add preperties to favourites/userId
+
+myDataRef.child('favourites/' + userId).push({id:'userId2', name:'userName'});
+    console.log('favourites is already in the system');
+
+  } else {
+
+// add favourites and userId   
+    myDataRef.child('favourites').child(userId).push({id:'userId', name:'userName'});
+  }
+})  
+}
+
+
+function moveUser(elem){
+    if( $(elem).parent().parent().attr("id") == "namesDiv" ){
+        $(elem).parent().detach().appendTo('#selected');
+    }
+    else{
+        $(elem).parent().detach().appendTo('#namesDiv'); 
+    }
 }
 
 
