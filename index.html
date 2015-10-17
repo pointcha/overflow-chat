@@ -257,6 +257,7 @@ function login(provider) {
 })
    }
  });
+  // refresh the message panel
 }
 
 
@@ -470,23 +471,22 @@ function displayNamesUser(userName) {
 }
 
 
-function addFavourite() {
-myDataRef.child('favourites').child(userId).once("value", function(snapshot) {
-  var ifExists = snapshot.exists(); //a firebase function
+//function addFavourite() {
+//myDataRef.child('favourites').child(userId).once("value", function(snapshot) {
+ // var ifExists = snapshot.exists(); //a firebase function
 
-  if (ifExists){
+  //if (ifExists){
 // just add preperties to favourites/userId
+//DataRef.child('favourites/' + userId).push({id:'userId2', name:'userName'});
+  //  console.log('favourites is already in the system');
 
-myDataRef.child('favourites/' + userId).push({id:'userId2', name:'userName'});
-    console.log('favourites is already in the system');
-
-  } else {
+  //} else {
 
 // add favourites and userId   
-    myDataRef.child('favourites').child(userId).push({id:'userId', name:'userName'});
-  }
-})  
-}
+   // myDataRef.child('favourites').child(userId).push({id:'userId', name:'userName'});
+  //}
+//})  
+//}
 
 
 function moveUser(elem){
