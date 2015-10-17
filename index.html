@@ -53,18 +53,18 @@
 
       <div class="side-sect favs">
         <div class="divide-title select">favourites</div><div class="divide"></div>
-<div id="selected">
-        <div class="bb-line hidden">
-         <div class="icon" onclick="moveButton(this)"></div>
-         <div class="title">Colby House</div><div class="distance km">3</div>
-       </div>
+        <div id="selected">
+          <div class="bb-line hidden">
+           <div class="icon" onclick="moveButton(this)"></div>
+           <div class="title">Colby House</div><div class="distance km">3</div>
+         </div>
 
-       <div class="bb-line hidden">
-        <div class="icon" onclick="moveButton(this)"></div>
-        <div class="title">Paradise Found</div><div class="distance km">5</div>
+         <div class="bb-line hidden">
+          <div class="icon" onclick="moveButton(this)"></div>
+          <div class="title">Paradise Found</div><div class="distance km">5</div>
+        </div>
       </div>
     </div>
-</div>
     <div class="side-sect near">
       <div class="divide-title">users</div><div class="divide"></div>
       <div id="namesDiv"></div>
@@ -230,47 +230,6 @@ if (authData){
 }
 
 
-function login(provider) {
-  myDataRef.authWithOAuthPopup(provider, function(error, authData) {
-    if (error) {
-      console.log("login Failed!", error);
-    } else {
-      console.log("Authenticated successfully with payload:", authData);
-      userId = authData.uid;
-      name = authData[authData.provider].displayName;
-      gravatar = authData[authData.provider].profileImageURL;
-      console.log(name);
-      showName();
-      authModal.modal('hide');
-     //$("#modal-title").html("Hello " + name);
-     console.log("User " + userId + " is logged in with " + authData.provider);
-     myDataRef.child('user').child(userId).once("value", function(snapshot) {
-
-  var ifExists = snapshot.exists(); //a firebase function
-
-
-  if (ifExists){
-    console.log('user is already in the system');
-  } else {
-    myDataRef.child('user').child(userId).push({id:userId, name:name, image:gravatar});
-  }
-})
-   }
- });
-  // refresh the message panel
-}
-
-
-function showName() {
-  $('.profile-pic').css('background-image', 'url(' + gravatar + ')');
-
-  $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
-
-  $("#user-settings").html("<a id='log-out' class='log-out' title='Log Out' href='javascript:logout();'> \
-   <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i><div class='log-title'>Log Out</div></a>");
-}
-
-
 $('#messageInput').keypress(function (e) {
   if (e.keyCode == 13) {
     postChat();
@@ -283,6 +242,96 @@ $(document).on("keypress", "#add-preset", function(e){
   addPreset();
 }
 });
+
+
+myDataRef.child('user').on('value', function(snapshot) {
+  var allNames = snapshot.val();
+  for (var u in allNames) {
+    for (var i in allNames[u]) {
+      if (name) {
+        if (allNames [u] [i].id !== userId) {
+          displayNamesUser(allNames [u] [i].name);
+        }
+      }
+    }
+  }
+});
+
+
+myDataRef.child('message').on('child_added', function(snapshot) {
+  var message = snapshot.val();
+  if (message.name && name) {
+    if (message.name == name) {
+      localFormatDate(message.date);
+      displayChatMessageMe(message.name, message.text, message.image, dt);
+    } else {
+      displayChatMessageOther(message.name, message.text, message.image, dt);
+    }
+  }
+  window.scrollTo(0,document.body.scrollHeight);
+});
+
+
+function login(provider) {
+  myDataRef.authWithOAuthPopup(provider, function(error, authData) {
+
+    if (error) {
+      console.log("login Failed!", error);
+    } else {
+      console.log("Authenticated successfully with payload:", authData);
+      userId = authData.uid;
+      name = authData[authData.provider].displayName;
+      gravatar = authData[authData.provider].profileImageURL;
+      console.log(name);
+      showName();
+      authModal.modal('hide');
+     //$("#modal-title").html("Hello " + name);
+     console.log("User " + userId + " is logged in with " + authData.provider);
+
+     myDataRef.child('user').child(userId).once("value", function(snapshot) {
+  var ifExists = snapshot.exists(); //a firebase function
+  if (ifExists){
+    console.log('user is already in the system');
+  } else {
+    myDataRef.child('user').child(userId).push({id:userId, name:name, image:gravatar});
+  }
+});
+   }
+ });
+
+  updateMessage();
+
+}
+
+
+function logout() {
+  console.log("logging out")
+  lastLog()
+  myDataRef.unauth();
+  location.reload();
+}
+
+
+function showName() {
+  $('.profile-pic').css('background-image', 'url(' + gravatar + ')');
+
+  $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
+
+  $("#user-settings").html("<a id='log-out' class='log-out' title='Log Out' href='javascript:logout();'> \
+   <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i><div class='log-title'>Log Out</div></a>");
+
+  //updateMessage();
+}
+
+
+function toggleStatus() {
+ $(".status").toggleClass( "no-vacancy" );
+ if ($(".status").hasClass( "no-vacancy" )) {
+  $(".status").html("No Vacancy");
+} else {
+  $(".status").html("Vacancy");
+}
+}
 
 
 function postChat() {
@@ -307,41 +356,10 @@ function postChat() {
 }
 
 
-function localFormatDate(d) {
-  var d = new Date(d);
-  var day = days[d.getDay()];
-  var hr = d.getHours();
-  if (hr == 0) {
-    hr = 12;
-  } else if (hr > 12) {
-    hr = hr - 12;
-  }
-  var min = d.getMinutes();
-  if (min < 10) {
-    min = "0" + min;
-  }
-  var ampm = (hr < 12) ? "am" : "pm";
-  var date = d.getDate();
-  var month = months[d.getMonth()];
-  var year = d.getFullYear();
-  dt = hr + ":" + min + ampm + " | " + day + ", " + date + " " + month;
-}
-
-
 function presetChatDisplay() {
   $( ".preset-chat" ).toggleClass( "hidden" );
   $( ".chevron-button" ).toggleClass( "select" );
   changePresetMenu();
-}
-
-
-function toggleStatus() {
- $(".status").toggleClass( "no-vacancy" );
- if ($(".status").hasClass( "no-vacancy" )) {
-  $(".status").html("No Vacancy");
-} else {
-  $(".status").html("Vacancy");
-}
 }
 
 
@@ -355,20 +373,20 @@ $(document).on('click', '#preset-chat a' , function(e) {
   var id = $(this).attr('id'); 
   if (id == "add") {
 
-//change the line to an input field
-$("#add").html("<div class='add-preset-button fa fa-plus-circle fa-2' onclick='addPreset()'></div><input id='add-preset' type='text' placeholder=''>");
-$("#add").removeAttr('id');
-$(this).attr('id', 'new-preset')
 
-} else if (id == "new-preset") {
+    $("#add").html("<div class='add-preset-button fa fa-plus-circle fa-2' onclick='addPreset()'></div><input id='add-preset' type='text' placeholder=''>");
+    $("#add").removeAttr('id');
+    $(this).attr('id', 'new-preset')
 
-} else {
-  var txt = $(e.target).text();
-  $('#messageInput').val(txt);
-  presetChatDisplay();
-  postChatImage();
-  postChat();
-}
+  } else if (id == "new-preset") {
+
+  } else {
+    var txt = $(e.target).text();
+    $('#messageInput').val(txt);
+    presetChatDisplay();
+    postChatImage();
+    postChat();
+  }
 });
 
 
@@ -421,44 +439,21 @@ function addPreset() {
 }
 
 
-function logout() {
-  console.log("logging out")
-  myDataRef.unauth();
-  location.reload();
-  // $("#messagesDiv").html("");
-}
-
-
-myDataRef.child('user').on('value', function(snapshot) {
-  var allNames = snapshot.val();
-  for (var u in allNames) {
-    for (var i in allNames[u]) {
-      // console.log(allNames [u] [i].name);
-      if (name) {
-
-        if (allNames [u] [i].id !== userId) {
-          displayNamesUser(allNames [u] [i].name);
-        }
+function updateMessage(user) {
+  myDataRef.child('message').once('child_added', function(snapshot) {
+    message = snapshot.val();
+    name = "Steven Rolls";
+    if (message.name && name) {
+      if (message.name == name) {
+        localFormatDate(message.date);
+        displayChatMessageMe(message.name, message.text, message.image, dt);
+      } else {
+        displayChatMessageOther(message.name, message.text, message.image, dt);
       }
     }
-  }
-});
-
-
-myDataRef.child('message').on('child_added', function(snapshot) {
-  var message = snapshot.val();
- // userId = authData.uid
-  // console.log('user is already logged in');
-  if (message.name && name) {
-    if (message.name == name) {
-      localFormatDate(message.date);
-      displayChatMessageMe(message.name, message.text, message.image, dt);
-    } else {
-      displayChatMessageOther(message.name, message.text, message.image, dt);
-    }
-  }
-  window.scrollTo(0,document.body.scrollHeight);
-});
+    window.scrollTo(0,document.body.scrollHeight);
+  });
+} 
 
 
 function displayNamesUser(userName) {
@@ -470,32 +465,39 @@ function displayNamesUser(userName) {
     );
 }
 
+function lastLog() {
+  ld = new Date();
+  ldt = ld.toString();
 
-//function addFavourite() {
-//myDataRef.child('favourites').child(userId).once("value", function(snapshot) {
- // var ifExists = snapshot.exists(); //a firebase function
+  myDataRef.child('lastlog').update({logout:ldt});
+}
 
-  //if (ifExists){
-// just add preperties to favourites/userId
-//DataRef.child('favourites/' + userId).push({id:'userId2', name:'userName'});
-  //  console.log('favourites is already in the system');
 
-  //} else {
+/* function addFavourite() {
+myDataRef.child('favourites').child(userId).once("value", function(snapshot) {
+var ifExists = snapshot.exists(); //a firebase function
+
+if (ifExists){
+//just add preperties to favourites/userId
+DataRef.child('favourites/' + userId).push({id:'userId2', name:'userName'});
+console.log('favourites is already in the system');
+
+} else {
 
 // add favourites and userId   
-   // myDataRef.child('favourites').child(userId).push({id:'userId', name:'userName'});
-  //}
-//})  
-//}
+myDataRef.child('favourites').child(userId).push({id:'userId', name:'userName'});
+}
+})  
+} */
 
 
 function moveUser(elem){
-    if( $(elem).parent().parent().attr("id") == "namesDiv" ){
-        $(elem).parent().detach().appendTo('#selected');
-    }
-    else{
-        $(elem).parent().detach().appendTo('#namesDiv'); 
-    }
+  if( $(elem).parent().parent().attr("id") == "namesDiv" ){
+    $(elem).parent().detach().appendTo('#selected');
+  }
+  else{
+    $(elem).parent().detach().appendTo('#namesDiv'); 
+  }
 }
 
 
@@ -527,6 +529,28 @@ function displayChatMessageOther(name, text, image, time) {
     );
   $('.other .profile-pic').css('background-image', 'url(' + image + ')');
 }
+
+
+function localFormatDate(d) {
+  var d = new Date(d);
+  var day = days[d.getDay()];
+  var hr = d.getHours();
+  if (hr == 0) {
+    hr = 12;
+  } else if (hr > 12) {
+    hr = hr - 12;
+  }
+  var min = d.getMinutes();
+  if (min < 10) {
+    min = "0" + min;
+  }
+  var ampm = (hr < 12) ? "am" : "pm";
+  var date = d.getDate();
+  var month = months[d.getMonth()];
+  var year = d.getFullYear();
+  dt = hr + ":" + min + ampm + " | " + day + ", " + date + " " + month;
+}
+
 </script>
 
 </body>
