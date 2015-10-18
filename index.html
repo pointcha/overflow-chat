@@ -7,15 +7,11 @@
   <title>Overflow - Opening Doors by Connecting Bed & Breakfasts</title>
   <meta name="Opening Doors by Connecting Bed & Breakfasts - A focused social network designed to grow opportunities for bed & beakfasts by connecting them to one and other." content="The HTML5 Herald">
 
-  <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
-  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
-
   <!--links to include BOOTSTRAP to your project-->
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" />
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap-modal.min.js"></script>
 
   <!--links to include CSS to your project-->
   <link href="//fonts.googleapis.com/css?family=Open+Sans:300normal,300italic,400normal,400italic,600normal,600italic,700normal,700italic,800normal,800italic&amp;subset=all" rel="stylesheet" type="text/css">
@@ -24,7 +20,11 @@
   <link rel="stylesheet" href="assets/css/styles.css">
 
   <!--links to include EXTERNAL JS to your project-->
-  <script src="assets/js/chat.js"></script>
+
+  <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap-modal.min.js"></script>
+  <!-- <script src="assets/js/chat.js"></script> -->
 
   <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -45,7 +45,7 @@
         </div>
         <div id="user-settings" class="user-settings">
           <a id="log-out" class="log-out" title="Log In" href="javascript:showModal();">
-            <i id="log-out-btn" class="fa fa-sign-in fa-2x"></i>
+            <i id="log-out-btn" class="login"></i>
             <div class="log-title">Log In</div>
           </a>
         </div>
@@ -212,6 +212,7 @@
   var name = "";
   var userId = "";
   var logDate = "";
+  var f = "";
   console.log(authData);
   console.log(name);
   console.log(userId);
@@ -260,20 +261,24 @@ myDataRef.child('user').on('value', function(snapshot) {
 
 myDataRef.child('lastlog/' + userId).on('child_added', function(dsnapshot) {
     logUser = dsnapshot.val();
-    logDate = new Date(logUser.logout);
-  });
+    logDate = new Date(logUser);
+});
 
 
 myDataRef.child('message').limitToLast(10).on('child_added', function(snapshot) {
   var message = snapshot.val();
   messageDate = new Date(message.date);
 
-  if (messageDate > logDate) {
-    //addLine();
-    }
-
 if (message.id && userId) {
     localFormatDate(message.date);
+
+if (messageDate > logDate) {
+  if (!f) {
+    f = "first";
+     $('#messagesDiv').append("<div class='post-line'>Posted since last logged in.</div>");
+  }
+}
+
     if (message.id == userId) {
       displayChatMessageMe(message.name, message.text, message.image, dt);
     } else {
@@ -282,11 +287,6 @@ if (message.id && userId) {
   }
   window.scrollTo(0,document.body.scrollHeight);
 });
-
-
-  function addLine() {
-    $('.chatWrapper').html('added since last logged in');
-  }
 
 
   function showModal() {
@@ -340,7 +340,7 @@ function showName() {
   $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
 
   $("#user-settings").html("<a id='log-out' class='log-out' title='Log Out' href='javascript:logout();'> \
-   <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i><div class='log-title'>Log Out</div></a>");
+   <i id='log-out-btn' class='login'></i><div class='log-title'>Log Out</div></a>");
 }
 
 
