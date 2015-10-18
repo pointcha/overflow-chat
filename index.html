@@ -223,17 +223,10 @@ if (authData){
   userId = authData.uid;
   name = authData[authData.provider].displayName;
   gravatar = authData[authData.provider].profileImageURL;
- // showName();
-
- $('.profile-pic').css('background-image', 'url(' + gravatar + ')');
-
- $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
-
- $("#user-settings").html("<a id='log-out' class='log-out' title='Log Out' href='javascript:logout();'> \
-   <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i><div class='log-title'>Log Out</div></a>");
-
+  console.log('user is already logged in');
+  showName();
 } else {
- //authModal.modal('show');
+ // authModal.modal('show');
 }
 
 
@@ -285,48 +278,35 @@ function login(provider) {
     if (error) {
       console.log("login Failed!", error);
     } else {
-      console.log("Authenticated successful with payload:", authData);
-var authData = myDataRef.getAuth();
-var userId = authData.uid;
-if (authData){
-  userId = authData.uid;
-  name = authData[authData.provider].displayName;
-  gravatar = authData[authData.provider].profileImageURL;
-}
-
+      console.log("Authenticated successfully with payload:", authData);
+      userId = authData.uid;
+      name = authData[authData.provider].displayName;
+      gravatar = authData[authData.provider].profileImageURL;
+      console.log(name);
+      showName();
       authModal.modal('hide');
-     // showName();
-
-     $('.profile-pic').css('background-image', 'url(' + gravatar + ')');
-
-     $("#display-name").html("<div>" + name + "</div><div class='status no-vacancy' onclick='toggleStatus()'>No Vacancy</div>");
-
-     $("#user-settings").html("<a id='log-out' class='log-out' title='Log Out' href='javascript:logout();'> \
-       <i id='log-out-btn' class='fa fa-sign-out fa-2x'></i><div class='log-title'>Log Out</div></a>");
-
+     //$("#modal-title").html("Hello " + name);
      console.log("User " + userId + " is logged in with " + authData.provider);
 
      myDataRef.child('user').child(userId).once("value", function(snapshot) {
   var ifExists = snapshot.exists(); //a firebase function
   if (ifExists){
     console.log('user is already in the system');
-    updateMessage(name);
   } else {
     myDataRef.child('user').child(userId).push({id:userId, name:name, image:gravatar});
   }
 });
    }
  });
+
+  updateMessage();
+
 }
 
 
 function logout() {
-  //console.log(authData.uid)
-  //lastLog();
-  ld = new Date();
-  ldt = ld.toString();
-  myDataRef.child('lastlog').child(userId).update({logout:ldt});
-
+  console.log("logging out")
+  lastLog()
   myDataRef.unauth();
   location.reload();
 }
@@ -459,88 +439,9 @@ function addPreset() {
 }
 
 
-function updateMessage(name) {
-  lastMessagesQuery = myDataRef.child('message').endAt().limitToLast(3);
-
-  lastMessagesQuery.once('value', function(snapshot) {
-    snapshot.forEach(function(childSnapshot) {
-
-      var key = childSnapshot.key();
-      var childData = childSnapshot.val();
-      console.log("update" + name);
-      console.log(childData.date);
-      var messageTime = childData.date;
-      var now = new Date();
-
-      if (messageTime < now) {
-        console.log("excelent");
-      }
-    });
-  });
-}
-
-// name is present
-// childData.data is present
-/*
-myDataRef.child('lastlog/logout').once("value", function(snapshot) {
-var logTime = snapshot.val();
-});
-if (logTime){
-  if (logTime < childData.date) {
-console.log("This message is new")
-}
-}
-
-
-
-
-
-console.log("update" + logTime);
-console.log("update" + name);
-console.log(childData.date);
-*/
-
-
-
-
-
-  /*  
-
-}
-
-
-    if (message.name && name) {
-      var messageDate = localFormatDate(message.date);
-      if (messageDate > lastlog) {
-        if (message.name == name) {
-          displayChatMessageMe(message.name, message.text, message.image, dt);
-        } else {
-          displayChatMessageOther(message.name, message.text, message.image, dt);
-        }
-      }
-    }
-    window.scrollTo(0,document.body.scrollHeight);
-  });
-}
-
-
-  lastMessagesQuery.once('child_added', function(snapshot) {
+function updateMessage(user) {
+  myDataRef.child('message').once('child_added', function(snapshot) {
     message = snapshot.val();
-
-
-  for (var u in message) {
-    localFormatDate(date)
-    var lastLog = 
-    
-      if (dt > laslog) {
-        if (allNames [u] [i].id !== userId) {
-          displayNamesUser(allNames [u] [i].name);
-        }
-      }
-    
-  }
-
-
     name = "Steven Rolls";
     if (message.name && name) {
       if (message.name == name) {
@@ -552,7 +453,7 @@ console.log(childData.date);
     }
     window.scrollTo(0,document.body.scrollHeight);
   });
-} */
+} 
 
 
 function displayNamesUser(userName) {
@@ -567,7 +468,8 @@ function displayNamesUser(userName) {
 function lastLog() {
   ld = new Date();
   ldt = ld.toString();
-  myDataRef.child('lastlog').child(userId).update({logout:ldt});
+
+  myDataRef.child('lastlog').update({logout:ldt});
 }
 
 
