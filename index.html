@@ -261,12 +261,10 @@ $(document).on("keypress", "#add-preset", function(e){
 myDataRef.child('user').on('child_added', function(snapshot) {
   snapshot.forEach(function(childSnapshot) {
   var allNames = childSnapshot.val();
-});
-if (name) {
-        if (allNames.id !== userId) {
           displayNamesUser(allNames.name);
-        }
-  }
+
+          
+});
 });
 
 
