@@ -94,8 +94,6 @@
         </div>
       </div>
 
-      
-
       <div class="response">
         <div class="icon send"></div>
         <div class="bb-left">
@@ -246,7 +244,7 @@ $(document).on("keypress", "#add-preset", function(e){
 });
 
 
-myDataRef.child('user').on('value', function(snapshot) {
+/* myDataRef.child('user').on('child_added', function(snapshot) {
   var allNames = snapshot.val();
   for (var u in allNames) {
     for (var i in allNames[u]) {
@@ -257,7 +255,20 @@ myDataRef.child('user').on('value', function(snapshot) {
       }
     }
   }
+}); */
+
+
+myDataRef.child('user').on('child_added', function(snapshot) {
+  snapshot.forEach(function(childSnapshot) {
+  var allNames = childSnapshot.val();
 });
+if (name) {
+        if (allNames.id !== userId) {
+          displayNamesUser(allNames.name);
+        }
+  }
+});
+
 
 myDataRef.child('lastlog/' + userId).on('child_added', function(dsnapshot) {
     logUser = dsnapshot.val();
@@ -523,7 +534,7 @@ function displayChatMessageMe(name, text, image, date) {
 function displayChatMessageOther(name, text, image, date) {
   $('#messagesDiv').append ( 
     "<div class='chat-wrapper other'> \
-    <div class='profile-pic'></div> \
+    <div class='profile-pic' style='background-image: url(" + image + ");'></div> \
     <div class='chat-body'> \
     <div class='title'>" + name + "</div><div class='date'>" + date + "</div> \
     <div class='message'>" + text + "</div>" 
@@ -531,7 +542,7 @@ function displayChatMessageOther(name, text, image, date) {
     // <div class='icon respond'></div> \
     // <div class='text respond'>respond</div></div></div></div>"
     );
-  $('.other .profile-pic').css('background-image', 'url(' + image + ')');
+  //$('.other .profile-pic').css('background-image', 'url(' + image + ')');
 }
 
 
