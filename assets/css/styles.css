@@ -244,8 +244,9 @@ aside {
     max-height: 115px;
     width: calc(100% - 480px);
     padding: 0 40px 0 40px;
-    border-bottom: 1px #dfdfdf solid;
+    border-top: 1px #dfdfdf solid;
     right: 0;
+    bottom: 0px;
     position: fixed;
 }
 
@@ -336,6 +337,7 @@ select, textarea,  input[type="text"].chat-entry , input[type="password"], input
     margin-top: 5px;
     border-radius: 8px;
     position: absolute;
+    bottom: 75px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
@@ -407,7 +409,7 @@ section {
 .chat-wrapper {
     padding: 30px 0;
     width: calc(100% - 40px);
-    border-bottom: #dfdfdf 1px dotted;
+    border-top: #dfdfdf 1px dotted;
 }
 
 .chat-wrapper .title {
