@@ -261,7 +261,7 @@ $(document).on("keypress", "#add-preset", function(e){
   }
 }); */
 
-
+/*
 myDataRef.child('user').once('value', function(snapshot) {
   snapshot.forEach(function(childSnapshot) {
 var allNames = childSnapshot.val();
@@ -273,7 +273,7 @@ for (var i in allNames) {
 
   }
   });
-});
+}); */
 
 
 myDataRef.child('lastlog/' + userId).on('child_added', function(dsnapshot) {
@@ -310,13 +310,12 @@ function showModal() {
   authModal.modal('show');
 }
 
-
 function login(provider) {
  myDataRef.authWithOAuthPopup(provider, function(error, authData) {
 
   if (error) {
     console.log("login Failed!", error);
-  } else {
+  } else if (authData){
     console.log("Authenticated successfully with payload:", authData);
     userId = authData.uid;
 
@@ -333,7 +332,7 @@ function login(provider) {
   if (ifExists){
     console.log('user is already in the system');
     setUserNodeId();
-    console.log('user node is ' + userNodeId);
+    console.log('user node is 2' + userNodeId);
     if (userNodeId) {
     myDataRef.child('user').child(userId).child(userNodeId).update({logged:logged});
     }
@@ -342,10 +341,12 @@ function login(provider) {
     setUserNodeId();
   }
 });
+
   }
+
+
 });
 }
-
 
 
 function setUserNodeId() {
@@ -353,8 +354,10 @@ function setUserNodeId() {
       data = snapshot.val();
       for (key in data) {
         userNodeId = key;
+        console.log('user node is 1 ' + userNodeId);
       }
-    });
+      console.log('user node is 1 ' + userNodeId);
+    }); 
 }
 
 
