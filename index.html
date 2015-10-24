@@ -229,135 +229,114 @@
     gravatar = authData[authData.provider].profileImageURL;
     console.log('user is already logged in');
     showName();
-  } else {
- // authModal.modal('show');
-}
+  } 
 
 
-$('#messageInput').keypress(function (e) {
-  if (e.keyCode == 13) {
-    postChat();
-  }
-});
-
-
-$(document).on("keypress", "#add-preset", function(e){
- if (e.keyCode == 13) {
-  addPreset();
-}
-});
-
-
-/* myDataRef.child('user').on('value', function(snapshot) {
-  var allNames = snapshot.val();
-  for (var u in allNames) {
-    for (var i in allNames[u]) {
-      //if (name) {
-        //if (allNames [u] [i].id !== userId) {
-          displayNamesUser(allNames [u] [i].name);
-        //}
-      //}
+  $('#messageInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+      postChat();
     }
-  }
-}); */
-
-/*
-myDataRef.child('user').once('value', function(snapshot) {
-  snapshot.forEach(function(childSnapshot) {
-var allNames = childSnapshot.val();
-
-for (var i in allNames) {
-    
-    userLogged = allNames [i].logged;
-    displayNamesUser(allNames [i].name);
-
-  }
   });
-}); */
 
 
-myDataRef.child('lastlog/' + userId).on('child_added', function(dsnapshot) {
-  logUser = dsnapshot.val();
-  logDate = new Date(logUser);
+  $(document).on("keypress", "#add-preset", function(e){
+   if (e.keyCode == 13) {
+    addPreset();
+  }
 });
 
 
-myDataRef.child('message').limitToLast(10).on('child_added', function(snapshot) {
-  var message = snapshot.val();
-  messageDate = new Date(message.date);
+  myDataRef.child('user').on('value', function(snapshot) {
+   $('#namesDiv').html ("");
+   snapshot.forEach(function(childSnapshot) {
+    var allNames = childSnapshot.val();
+    for (var i in allNames) {
+      userLogged = allNames [i].logged;
+      displayNamesUser(allNames [i].name);
+    }
+  });
+ }); 
 
-  if (message.id && userId) {
-    localFormatDate(message.date);
 
-    if (messageDate > logDate) {
-      if (!f) {
-        f = "first";
-        $('#messagesDiv').append("<div class='post-line'>Posted since last logged in.</div>");
+  myDataRef.child('lastlog/' + userId).on('child_added', function(dsnapshot) {
+    logUser = dsnapshot.val();
+    logDate = new Date(logUser);
+  });
+
+
+  myDataRef.child('message').limitToLast(10).on('child_added', function(snapshot) {
+    var message = snapshot.val();
+    messageDate = new Date(message.date);
+    if (message.id && userId) {
+      localFormatDate(message.date);
+      if (messageDate > logDate) {
+        if (!f) {
+          f = "first";
+          $('#messagesDiv').append("<div class='post-line'>Posted since last logged in.</div>");
+        }
+      }
+      if (message.id == userId) {
+        displayChatMessageMe(message.name, message.text, message.image, dt);
+      } else {
+        displayChatMessageOther(message.name, message.text, message.image, dt);
       }
     }
+    window.scrollTo(0,document.body.scrollHeight);
+  });
 
-    if (message.id == userId) {
-      displayChatMessageMe(message.name, message.text, message.image, dt);
-    } else {
-      displayChatMessageOther(message.name, message.text, message.image, dt);
-    }
+
+  function showModal() {
+    authModal.modal('show');
   }
-  window.scrollTo(0,document.body.scrollHeight);
-});
 
+  function login(provider) {
+   myDataRef.authWithOAuthPopup(provider, function(error, authData) {
 
-function showModal() {
-  authModal.modal('show');
-}
+    if (error) {
+      console.log("login Failed!", error);
+    } else if (authData){
+      console.log("Authenticated successfully with payload:", authData);
+      userId = authData.uid;
+      name = authData[authData.provider].displayName;
+      location.reload();
+      gravatar = authData[authData.provider].profileImageURL;
+      logged = "yes"
+      console.log(name);
+      showName();
+      authModal.modal('hide');
+      console.log("User " + userId + " is logged in with " + authData.provider);
 
-function login(provider) {
- myDataRef.authWithOAuthPopup(provider, function(error, authData) {
-
-  if (error) {
-    console.log("login Failed!", error);
-  } else if (authData){
-    console.log("Authenticated successfully with payload:", authData);
-    userId = authData.uid;
-
-    name = authData[authData.provider].displayName;
-    gravatar = authData[authData.provider].profileImageURL;
-    logged = "yes"
-    console.log(name);
-    showName();
-    authModal.modal('hide');
-    console.log("User " + userId + " is logged in with " + authData.provider);
-
-    myDataRef.child('user').child(userId).once("value", function(snapshot) {
+      myDataRef.child('user').child(userId).once("value", function(snapshot) {
   var ifExists = snapshot.exists(); //a firebase function
   if (ifExists){
     console.log('user is already in the system');
-    setUserNodeId();
-    console.log('user node is 2' + userNodeId);
-    if (userNodeId) {
-    myDataRef.child('user').child(userId).child(userNodeId).update({logged:logged});
+//setUserNodeId();
+data = snapshot.val();
+for (key in data) {
+  userNodeId = key;
+  console.log('user node is 1 ' + userNodeId);
+}
+if (userNodeId) {
+  myDataRef.child('user').child(userId).child(userNodeId).update({logged:logged});
+  
+}
+} else {
+  myDataRef.child('user').child(userId).push({id:userId, name:name, image:gravatar, logged:logged});
+  setUserNodeId();
+}
+});
     }
-  } else {
-    myDataRef.child('user').child(userId).push({id:userId, name:name, image:gravatar, logged:logged});
-    setUserNodeId();
-  }
-});
-
-  }
-
-
-});
+  });
 }
 
 
 function setUserNodeId() {
-    myDataRef.child('user').child(userId).once("value", function(snapshot) {
-      data = snapshot.val();
-      for (key in data) {
-        userNodeId = key;
-        console.log('user node is 1 ' + userNodeId);
-      }
-      console.log('user node is 1 ' + userNodeId);
-    }); 
+  myDataRef.child('user').child(userId).once("value", function(snapshot) {
+    data = snapshot.val();
+    for (key in data) {
+      userNodeId = key;
+    }
+  }); 
 }
 
 
@@ -365,7 +344,7 @@ function logout() {
   lastLog();
   logged = "";
   if (userNodeId) {
-  myDataRef.child('user').child(userId).child(userNodeId).update({logged:logged});
+    myDataRef.child('user').child(userId).child(userNodeId).update({logged:logged});
   }
   myDataRef.unauth();
   name = "";
