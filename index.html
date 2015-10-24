@@ -261,7 +261,7 @@ $(document).on("keypress", "#add-preset", function(e){
   }
 }); */
 
-/*
+
 myDataRef.child('user').once('value', function(snapshot) {
   snapshot.forEach(function(childSnapshot) {
 var allNames = childSnapshot.val();
@@ -273,7 +273,7 @@ for (var i in allNames) {
 
   }
   });
-}); */
+}); 
 
 
 myDataRef.child('lastlog/' + userId).on('child_added', function(dsnapshot) {
@@ -331,33 +331,32 @@ function login(provider) {
   var ifExists = snapshot.exists(); //a firebase function
   if (ifExists){
     console.log('user is already in the system');
-    setUserNodeId();
-    console.log('user node is 2' + userNodeId);
-    if (userNodeId) {
-    myDataRef.child('user').child(userId).child(userNodeId).update({logged:logged});
-    }
-  } else {
-    myDataRef.child('user').child(userId).push({id:userId, name:name, image:gravatar, logged:logged});
-    setUserNodeId();
-  }
+//setUserNodeId();
+data = snapshot.val();
+for (key in data) {
+  userNodeId = key;
+  console.log('user node is 1 ' + userNodeId);
+}
+if (userNodeId) {
+  myDataRef.child('user').child(userId).child(userNodeId).update({logged:logged});
+}
+} else {
+  myDataRef.child('user').child(userId).push({id:userId, name:name, image:gravatar, logged:logged});
+  setUserNodeId();
+}
 });
-
   }
-
-
 });
 }
 
 
 function setUserNodeId() {
-    myDataRef.child('user').child(userId).once("value", function(snapshot) {
-      data = snapshot.val();
-      for (key in data) {
-        userNodeId = key;
-        console.log('user node is 1 ' + userNodeId);
-      }
-      console.log('user node is 1 ' + userNodeId);
-    }); 
+  myDataRef.child('user').child(userId).once("value", function(snapshot) {
+    data = snapshot.val();
+    for (key in data) {
+      userNodeId = key;
+    }
+  }); 
 }
 
 
@@ -365,7 +364,7 @@ function logout() {
   lastLog();
   logged = "";
   if (userNodeId) {
-  myDataRef.child('user').child(userId).child(userNodeId).update({logged:logged});
+    myDataRef.child('user').child(userId).child(userNodeId).update({logged:logged});
   }
   myDataRef.unauth();
   name = "";
